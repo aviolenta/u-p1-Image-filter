@@ -23,6 +23,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   });
 
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
+  /**************************************************************************** */
   // endpoint to filter an image from a public url.
   // QUERY PARAMATERS
   //    image_url: URL of a publicly accessible image
@@ -32,14 +33,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // GET /filteredimage?image_url={{URL}}
   app.get( "/filteredimage", async (req, res) => {
       let { image_url } = req.query;
-      console.log(isImageUrl(image_url));
-      const isURL = url.isUri(image_url)==undefined;
-      console.log(isURL);
       
       //    1. validate the image_url query
       if (!(isImageUrl(image_url))) {
             return res.status(400).send(`A valid Image URL is required`);}
-      else if ((isURL)== true) {
+      //    1a. Validate if url is not correct but passes the image_url query validation
+      else if (url.isUri(image_url)==undefined) {
             return res.status(406).send(`Not valid Image URL!`);}
       else{      
       //    2. call filterImageFromURL(image_url) to filter the image
