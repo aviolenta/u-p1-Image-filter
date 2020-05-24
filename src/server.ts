@@ -13,9 +13,15 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
   
-  // --- Added NPM is-image-url to verify 
+  // --- (npm) Added to verify if a valid image url
   const isImageUrl = require('is-image-url');
+  
+  // --- (npm) Added to verify if a valid url
   const url = require('valid-url');
+  
+  // --- (npm) Added to verify if url status 
+  const code = require('url-status-code');
+
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
@@ -40,14 +46,16 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       //    1a. Validate if url is not correct but passes the image_url query validation
       else if (url.isUri(image_url)==undefined) {
             return res.status(406).send(`Not valid Image URL!`);}
+      //    1b. Validate if url is valid but does not return a 200 status code 
+            else if (await code(image_url)==404){
+            return res.status(404).send(`Image URL Not Found!`);}
       else{      
       //    2. call filterImageFromURL(image_url) to filter the image
             await filterImageFromURL(image_url)
       //    3. send the resulting file in the response
-            .then(function (filteredpath){res.status(200).sendFile(filteredpath, 
+            .then(function (filteredpath){ res.status(200).sendFile(filteredpath, 
       //    4. deletes any files on the server on finish of the response
-            () => deleteLocalFiles([filteredpath]))});}
-      });
+            () => deleteLocalFiles([filteredpath]))})}});
    /**************************************************************************** */
   //! END @TODO1
   
