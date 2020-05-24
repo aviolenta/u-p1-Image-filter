@@ -35,21 +35,20 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       console.log(isImageUrl(image_url));
       const isURL = url.isUri(image_url)==undefined;
       console.log(isURL);
-      try{
+      
       //    1. validate the image_url query
-            if (!(isImageUrl(image_url) || isURL )) {
-                  return res.status(400).send(`A valid Image URL is required`);}
+      if (!(isImageUrl(image_url))) {
+            return res.status(400).send(`A valid Image URL is required`);}
+      else if ((isURL)== true) {
+            return res.status(406).send(`Not valid Image URL!`);}
+      else{      
       //    2. call filterImageFromURL(image_url) to filter the image
             await filterImageFromURL(image_url)
       //    3. send the resulting file in the response
-            .then(function (filteredpath){
-                  res.status(200).sendFile(filteredpath, 
+            .then(function (filteredpath){res.status(200).sendFile(filteredpath, 
       //    4. deletes any files on the server on finish of the response
-                  () => deleteLocalFiles([filteredpath]))});}
-      catch(Error)
-      {
-            return res.status(400).send(`Image URL is required`);}
-    });
+            () => deleteLocalFiles([filteredpath]))});}
+      });
    /**************************************************************************** */
   //! END @TODO1
   
