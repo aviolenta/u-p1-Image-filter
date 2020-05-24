@@ -14,8 +14,8 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.use(bodyParser.json());
   
   // --- Added NPM is-image-url to verify 
-  // const isImageUrl = require('is-image-url');
-
+  const isImageUrl = require('is-image-url');
+  const url = require('valid-url');
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
@@ -31,21 +31,25 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // IT SHOULD:
   // GET /filteredimage?image_url={{URL}}
   app.get( "/filteredimage", async (req, res) => {
-    try{
-          let { image_url } = req.query;
-    //    1. validate the image_url query
-          if (!image_url) {
+      let { image_url } = req.query;
+      console.log(isImageUrl(image_url));
+      const isURL = url.isUri(image_url)==undefined;
+      console.log(isURL);
+      try{
+      //    1. validate the image_url query
+            if (!(isImageUrl(image_url) || isURL )) {
+                  return res.status(400).send(`A valid Image URL is required`);}
+      //    2. call filterImageFromURL(image_url) to filter the image
+            await filterImageFromURL(image_url)
+      //    3. send the resulting file in the response
+            .then(function (filteredpath){
+                  res.status(200).sendFile(filteredpath, 
+      //    4. deletes any files on the server on finish of the response
+                  () => deleteLocalFiles([filteredpath]))});}
+      catch(Error)
+      {
             return res.status(400).send(`Image URL is required`);}
-    //    2. call filterImageFromURL(image_url) to filter the image
-          filterImageFromURL(image_url)
-    //    3. send the resulting file in the response
-          .then(function (filteredpath){ res.status(200).sendFile(filteredpath,
-    //    4. deletes any files on the server on finish of the response
-          () => deleteLocalFiles([filteredpath]))})
-    }
-    catch(error){
-      res.status(400).send(`Not able to filter image`)};
-  });
+    });
    /**************************************************************************** */
   //! END @TODO1
   
