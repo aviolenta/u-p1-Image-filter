@@ -1,4 +1,4 @@
-Endpoint to EB server: http://u-p1-image-filter-dev.us-west-1.elasticbeanstalk.com/
+Endpoint to EB server: http://u-p1-image-filter-dev.us-west-1.elasticbeanstalk.com/ (n/a)
 
 # Udagram Image Filtering Microservice
 
